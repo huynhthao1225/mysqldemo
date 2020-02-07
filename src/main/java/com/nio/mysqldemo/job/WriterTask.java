@@ -1,16 +1,18 @@
 package com.nio.mysqldemo.job;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.Callable;
 
 @Component
-public class WriterJob implements Runnable, InitializingBean {
-
+@Scope("prototype")
+public class WriterTask implements Callable, InitializingBean {
     private PipedInputStream pipedInputStream;
     private PipedOutputStream pipedOutputStream;
     private boolean closePipeSignal = false;
@@ -18,22 +20,20 @@ public class WriterJob implements Runnable, InitializingBean {
     private byte delimiter;
 
     @Override
-    public void run() {
+    public Object call() {
         byte readByte;
         byteArrayOutputStream = new ByteArrayOutputStream();
         while (!closePipeSignal) {
             try {
-                if (pipedInputStream.available() > 0) {
-                    readByte = (byte) pipedInputStream.read();
-                    if (readByte != delimiter) {
-                        byteArrayOutputStream.write(readByte);
-                    } else {
-                        String msg = byteArrayOutputStream.toString();
-                        System.out.println(msg);
-                        byteArrayOutputStream.reset();
-                    }
-                    //Thread.sleep(10);
+                readByte = (byte) pipedInputStream.read();
+                if (readByte != delimiter) {
+                    byteArrayOutputStream.write(readByte);
+                } else {
+                    String msg = byteArrayOutputStream.toString();
+                    System.out.println(msg);
+                    byteArrayOutputStream.reset();
                 }
+                //Thread.sleep(10);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -43,6 +43,7 @@ public class WriterJob implements Runnable, InitializingBean {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void closePipeSignal() {
@@ -63,6 +64,4 @@ public class WriterJob implements Runnable, InitializingBean {
         byte[] bytes = del.getBytes();
         delimiter = bytes[0];
     }
-
-
 }
