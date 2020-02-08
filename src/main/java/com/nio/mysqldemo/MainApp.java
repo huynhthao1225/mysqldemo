@@ -43,8 +43,8 @@ public class MainApp implements CommandLineRunner, InitializingBean {
         try {
             con = dataSource.getConnection();
             System.out.println("I got connection ...");
-            printActors();
-            //writeActors();
+            //printActors();
+            writeActors();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -132,6 +132,6 @@ public class MainApp implements CommandLineRunner, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         Obj = new ObjectMapper();
         writerJob = applicationContext.getBean(WriterJob.class);
-        writerTask = applicationContext.getBean(WriterTask.class);
+        writerTask = applicationContext.getBean(WriterTask.class,"testfile.dat");
     }
 }

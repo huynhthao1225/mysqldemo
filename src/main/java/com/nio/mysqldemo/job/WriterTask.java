@@ -1,6 +1,10 @@
 package com.nio.mysqldemo.job;
 
+import com.nio.mysqldemo.file.WriterFile;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +17,21 @@ import java.util.concurrent.Callable;
 @Component
 @Scope("prototype")
 public class WriterTask implements Callable, InitializingBean {
+
     private PipedInputStream pipedInputStream;
     private PipedOutputStream pipedOutputStream;
     private boolean closePipeSignal = false;
     private ByteArrayOutputStream byteArrayOutputStream;
     private byte delimiter;
+    private String writerFileName;
+
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    public WriterTask(String writerFileName) {
+        this.writerFileName = writerFileName;
+    }
 
     @Override
     public Object call() {
@@ -31,6 +45,7 @@ public class WriterTask implements Callable, InitializingBean {
                 } else {
                     String msg = byteArrayOutputStream.toString();
                     System.out.println(msg);
+                    writerFile.WriteData(msg);
                     byteArrayOutputStream.reset();
                 }
                 //Thread.sleep(10);
@@ -46,14 +61,16 @@ public class WriterTask implements Callable, InitializingBean {
         return null;
     }
 
-    public void closePipeSignal() {
+    public void closePipeSignal() throws IOException {
         this.closePipeSignal = true;
+        writerFile.closeFile();
     }
 
     public PipedOutputStream getPipedOutputStream() {
         return pipedOutputStream;
     }
 
+    WriterFile writerFile;
     @Override
     public void afterPropertiesSet() throws Exception {
         pipedInputStream = new PipedInputStream();
@@ -63,5 +80,6 @@ public class WriterTask implements Callable, InitializingBean {
         String del = "|";
         byte[] bytes = del.getBytes();
         delimiter = bytes[0];
+        writerFile = applicationContext.getBean(WriterFile.class, writerFileName);
     }
 }
