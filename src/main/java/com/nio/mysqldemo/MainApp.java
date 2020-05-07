@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 @Component
 public class MainApp implements CommandLineRunner {
 
-
     @Autowired
     private WriterConsoleAndFile writerConsoleAndFile;
     @Autowired

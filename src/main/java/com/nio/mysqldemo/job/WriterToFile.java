@@ -14,7 +14,6 @@ import java.io.PipedOutputStream;
 import java.util.concurrent.Callable;
 
 @Component
-@Scope("prototype")
 public class WriterToFile implements Callable, InitializingBean {
 
     private PipedInputStream pipedInputStream;
