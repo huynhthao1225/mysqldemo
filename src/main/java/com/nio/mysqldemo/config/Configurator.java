@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Configuration
-public class DsConfig {
+public class Configurator {
 
     @Value("${ds.driver}")
     private String driverName;
@@ -31,7 +31,7 @@ public class DsConfig {
 
     @Bean("fixedThreadPool")
     public ExecutorService fixedThreadPool() {
-        return Executors.newFixedThreadPool(5);
+        return Executors.newFixedThreadPool(10);
     }
 
     @Bean("singleThreaded")

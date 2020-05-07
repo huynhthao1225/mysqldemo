@@ -33,7 +33,7 @@ public class WriterConsoleAndFile implements InitializingBean {
     private WriterToFile writerToFile;
 
     public void letDoIt() throws IOException, InterruptedException {
-        System.out.println(String.format("%s","***** START %s *****",  this.getClass().getCanonicalName()));
+        System.out.println(String.format("***** START %s *****",  this.getClass().getSimpleName()));
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -63,9 +63,8 @@ public class WriterConsoleAndFile implements InitializingBean {
         System.out.println("I am about to signal end pipeOutputStream");
         writerToFile.closePipeSignal();
         writerToConsole.closePipeSignal();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-        executorService.shutdown();
-        System.out.println(String.format("%s","***** END %s *****",  this.getClass().getCanonicalName()));
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println(String.format("***** END %s *****",  this.getClass().getSimpleName()));
     }
 
     private String toJson(Actor actor) {

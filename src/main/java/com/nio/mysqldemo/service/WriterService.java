@@ -15,10 +15,10 @@ abstract class WriterService implements Runnable, InitializingBean {
     private boolean closePipeSignal = false;
     private ByteArrayOutputStream byteArrayOutputStream;
     private byte delimiter;
-    private String writerFileName;
-    FileWriter fileWriter;
+    protected String writerFileName;
+    protected FileWriter fileWriter;
 
-    public WriterService(String writerFileName) {
+    public void setWriterFileName(String writerFileName) {
         this.writerFileName = writerFileName;
     }
 

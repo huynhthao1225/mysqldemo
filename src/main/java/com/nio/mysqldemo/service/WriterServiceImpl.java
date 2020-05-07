@@ -13,14 +13,7 @@ import org.springframework.stereotype.Service;
 public class WriterServiceImpl extends WriterService {
 
     @Autowired
-    ApplicationContext applicationContext;
-
-    public WriterServiceImpl(String fileName) {
-        super(fileName);
-        if (fileName != null) {
-            fileWriter = applicationContext.getBean(FileWriter.class, fileName);
-        }
-    }
+    private ApplicationContext applicationContext;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -29,6 +22,9 @@ public class WriterServiceImpl extends WriterService {
 
     @Override
     public void run() {
+        if (writerFileName != null) {
+            fileWriter = applicationContext.getBean(FileWriter.class, writerFileName);
+        }
         letGo();
     }
 }

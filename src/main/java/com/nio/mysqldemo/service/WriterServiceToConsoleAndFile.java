@@ -34,13 +34,14 @@ public class WriterServiceToConsoleAndFile implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         objectMapper = new ObjectMapper();
-        writerToConsole = applicationContext.getBean(WriterServiceImpl.class, null);
-        writerToFile = applicationContext.getBean(WriterServiceImpl.class,"testfile2.dat");
+        writerToConsole = applicationContext.getBean(WriterServiceImpl.class);
+        writerToFile = applicationContext.getBean(WriterServiceImpl.class);
+        writerToFile.setWriterFileName("testfile2.dat");
     }
 
     public void letDoIt() throws IOException, InterruptedException {
 
-        System.out.println(String.format("%s","***** START %s *****", WriterServiceToConsoleAndFile.class.getCanonicalName()));
+        System.out.println(String.format("***** START %s *****", WriterServiceToConsoleAndFile.class.getSimpleName()));
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -70,9 +71,8 @@ public class WriterServiceToConsoleAndFile implements InitializingBean {
         System.out.println("I am about to signal end pipeOutputStream");
         writerToFile.closePipeSignal();
         writerToConsole.closePipeSignal();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-        executorService.shutdown();
-        System.out.println(String.format("%s","***** END %s *****", WriterServiceToConsoleAndFile.class.getCanonicalName()));
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println(String.format("***** END %s *****", WriterServiceToConsoleAndFile.class.getSimpleName()));
     }
 
     private String toJson(Actor actor) {
