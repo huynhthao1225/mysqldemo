@@ -9,12 +9,12 @@ import java.io.*;
 @Component
 @Scope("prototype")
 @Lazy
-public class WriterFile implements InitializingBean {
+public class FileWriter implements InitializingBean {
     private File outFile;
-    private FileWriter fileWriter;
+    private java.io.FileWriter fileWriter;
     private String fileName;
 
-    public WriterFile(String fileName) {
+    public FileWriter(String fileName) {
         this.fileName = fileName;
     }
 

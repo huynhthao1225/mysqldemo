@@ -19,12 +19,10 @@ public class ActorDao {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    private Connection con = null;
 
     public SqlRowSet getAll() {
 
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(getAllSql);
-       // jdbcTemplate.query(getAllSql, )
         return sqlRowSet;
 
     }

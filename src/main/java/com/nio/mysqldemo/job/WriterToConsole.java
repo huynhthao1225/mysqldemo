@@ -1,54 +1,39 @@
 package com.nio.mysqldemo.job;
 
-import com.nio.mysqldemo.file.WriterFile;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.concurrent.Callable;
 
 @Component
-@Scope("prototype")
-public class WriterTask implements Callable, InitializingBean {
+public class WriterToConsole implements Runnable, InitializingBean {
 
     private PipedInputStream pipedInputStream;
     private PipedOutputStream pipedOutputStream;
     private boolean closePipeSignal = false;
     private ByteArrayOutputStream byteArrayOutputStream;
     private byte delimiter;
-    private String writerFileName;
-
-
-    @Autowired
-    ApplicationContext applicationContext;
-
-    public WriterTask(String writerFileName) {
-        this.writerFileName = writerFileName;
-    }
 
     @Override
-    public Object call() {
+    public void run() {
         byte readByte;
         byteArrayOutputStream = new ByteArrayOutputStream();
         while (!closePipeSignal) {
             try {
-                readByte = (byte) pipedInputStream.read();
-                if (readByte != delimiter) {
-                    byteArrayOutputStream.write(readByte);
-                } else {
-                    String msg = byteArrayOutputStream.toString();
-                    System.out.println(msg);
-                    writerFile.WriteData(msg);
-                    byteArrayOutputStream.reset();
+                if (pipedInputStream.available() > 0) {
+                    readByte = (byte) pipedInputStream.read();
+                    if (readByte != delimiter) {
+                        byteArrayOutputStream.write(readByte);
+                    } else {
+                        String msg = byteArrayOutputStream.toString();
+                        System.out.println(msg);
+                        byteArrayOutputStream.reset();
+                    }
+                    //Thread.sleep(10);
                 }
-                //Thread.sleep(10);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,19 +43,16 @@ public class WriterTask implements Callable, InitializingBean {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public void closePipeSignal() throws IOException {
+    public void closePipeSignal() {
         this.closePipeSignal = true;
-        writerFile.closeFile();
     }
 
     public PipedOutputStream getPipedOutputStream() {
         return pipedOutputStream;
     }
 
-    WriterFile writerFile;
     @Override
     public void afterPropertiesSet() throws Exception {
         pipedInputStream = new PipedInputStream();
@@ -80,6 +62,7 @@ public class WriterTask implements Callable, InitializingBean {
         String del = "|";
         byte[] bytes = del.getBytes();
         delimiter = bytes[0];
-        writerFile = applicationContext.getBean(WriterFile.class, writerFileName);
     }
+
+
 }
