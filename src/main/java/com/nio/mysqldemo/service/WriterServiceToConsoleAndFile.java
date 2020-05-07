@@ -33,10 +33,11 @@ public class WriterServiceToConsoleAndFile implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        String fileName = "testFile2.dat";
         objectMapper = new ObjectMapper();
         writerToConsole = applicationContext.getBean(WriterServiceImpl.class);
         writerToFile = applicationContext.getBean(WriterServiceImpl.class);
-        writerToFile.setWriterFileName("testfile2.dat");
+        writerToFile.setWriterFileName(fileName);
     }
 
     public void letDoIt() throws IOException, InterruptedException {

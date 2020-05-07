@@ -79,9 +79,10 @@ public class WriterConsoleAndFile implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        String fileName = "testFile1.dat";
         objectMapper = new ObjectMapper();
         writerToConsole = applicationContext.getBean(WriterToConsole.class);
-        writerToFile = applicationContext.getBean(WriterToFile.class,"testfile1.dat");
+        writerToFile = applicationContext.getBean(WriterToFile.class,fileName);
 
     }
 }
