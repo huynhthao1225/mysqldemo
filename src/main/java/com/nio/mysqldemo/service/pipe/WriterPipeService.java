@@ -1,4 +1,4 @@
-package com.nio.mysqldemo.service;
+package com.nio.mysqldemo.service.pipe;
 
 import com.nio.mysqldemo.file.FileWriter;
 import org.springframework.beans.factory.InitializingBean;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-abstract class WriterService implements Runnable, InitializingBean {
+abstract class WriterPipeService implements Runnable, InitializingBean {
 
     private PipedInputStream pipedInputStream;
     private PipedOutputStream pipedOutputStream;

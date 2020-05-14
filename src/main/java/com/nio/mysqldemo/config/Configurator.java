@@ -31,7 +31,7 @@ public class Configurator {
 
     @Bean("fixedThreadPool")
     public ExecutorService fixedThreadPool() {
-        return Executors.newFixedThreadPool(10);
+        return Executors.newFixedThreadPool(20);
     }
 
     @Bean("singleThreaded")

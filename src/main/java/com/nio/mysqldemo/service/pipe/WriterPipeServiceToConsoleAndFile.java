@@ -1,4 +1,4 @@
-package com.nio.mysqldemo.job;
+package com.nio.mysqldemo.service.pipe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nio.mysqldemo.dao.ActorDao;
@@ -9,16 +9,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Component
+@Service
 @Lazy
-public class WriterConsoleAndFile implements InitializingBean {
+public class WriterPipeServiceToConsoleAndFile implements InitializingBean {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -27,12 +27,22 @@ public class WriterConsoleAndFile implements InitializingBean {
     @Qualifier("fixedThreadPool")
     private ExecutorService executorService;
 
-    private WriterToConsole writerToConsole;
+    private WriterPipeServiceImpl writerToConsole;
     private ObjectMapper objectMapper;
-    private WriterToFile writerToFile;
+    private WriterPipeServiceImpl writerToFile;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String fileName = "testFile_pipe.dat";
+        objectMapper = new ObjectMapper();
+        writerToConsole = applicationContext.getBean(WriterPipeServiceImpl.class);
+        writerToFile = applicationContext.getBean(WriterPipeServiceImpl.class);
+        writerToFile.setWriterFileName(fileName);
+    }
 
     public void letDoIt() throws IOException, InterruptedException {
-        System.out.println(String.format("***** START %s *****",  this.getClass().getSimpleName()));
+
+        System.out.println(String.format("***** START %s *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName()));
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -63,7 +73,7 @@ public class WriterConsoleAndFile implements InitializingBean {
         writerToFile.closePipeSignal();
         writerToConsole.closePipeSignal();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
-        System.out.println(String.format("***** END %s *****",  this.getClass().getSimpleName()));
+        System.out.println(String.format("***** END %s *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName()));
     }
 
     private String toJson(Actor actor) {
@@ -74,14 +84,5 @@ public class WriterConsoleAndFile implements InitializingBean {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        String fileName = "testFile_Normal.dat";
-        objectMapper = new ObjectMapper();
-        writerToConsole = applicationContext.getBean(WriterToConsole.class);
-        writerToFile = applicationContext.getBean(WriterToFile.class,fileName);
-
     }
 }

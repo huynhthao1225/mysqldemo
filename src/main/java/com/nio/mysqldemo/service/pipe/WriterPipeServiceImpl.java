@@ -1,4 +1,4 @@
-package com.nio.mysqldemo.service;
+package com.nio.mysqldemo.service.pipe;
 
 import com.nio.mysqldemo.file.FileWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Lazy
 @Scope("prototype")
-public class WriterServiceImpl extends WriterService {
+public class WriterPipeServiceImpl extends WriterPipeService {
 
     @Autowired
     private ApplicationContext applicationContext;
