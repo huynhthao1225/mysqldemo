@@ -3,6 +3,8 @@ package com.nio.mysqldemo.job;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nio.mysqldemo.dao.ActorDao;
 import com.nio.mysqldemo.model.Actor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Lazy
 public class WriterConsoleAndFile implements InitializingBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(WriterConsoleAndFile.class);
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -32,7 +35,7 @@ public class WriterConsoleAndFile implements InitializingBean {
     private WriterToFile writerToFile;
 
     public void letDoIt() throws IOException, InterruptedException {
-        System.out.println(String.format("***** START %s *****",  this.getClass().getSimpleName()));
+        logger.info("***** START {} *****",  this.getClass().getSimpleName());
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -59,11 +62,11 @@ public class WriterConsoleAndFile implements InitializingBean {
         pipedOutputStreamToConsole.close();
         pipedOutputStreamToFile.close();
 
-        System.out.println("I am about to signal end pipeOutputStream");
+        logger.info("I am about to signal end pipeOutputStream");
         writerToFile.closePipeSignal();
         writerToConsole.closePipeSignal();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
-        System.out.println(String.format("***** END %s *****",  this.getClass().getSimpleName()));
+        logger.info("***** END {} *****",  this.getClass().getSimpleName());
     }
 
     private String toJson(Actor actor) {

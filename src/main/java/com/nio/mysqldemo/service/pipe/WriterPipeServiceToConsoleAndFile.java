@@ -3,6 +3,8 @@ package com.nio.mysqldemo.service.pipe;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nio.mysqldemo.dao.ActorDao;
 import com.nio.mysqldemo.model.Actor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Lazy
 public class WriterPipeServiceToConsoleAndFile implements InitializingBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(WriterPipeServiceToConsoleAndFile.class);
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -42,7 +45,7 @@ public class WriterPipeServiceToConsoleAndFile implements InitializingBean {
 
     public void letDoIt() throws IOException, InterruptedException {
 
-        System.out.println(String.format("***** START %s *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName()));
+        logger.info("***** START {} *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName());
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -69,11 +72,11 @@ public class WriterPipeServiceToConsoleAndFile implements InitializingBean {
         pipedOutputStreamToConsole.close();
         pipedOutputStreamToFile.close();
 
-        System.out.println("I am about to signal end pipeOutputStream");
+        logger.info("I am about to signal end pipeOutputStream");
         writerToFile.closePipeSignal();
         writerToConsole.closePipeSignal();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
-        System.out.println(String.format("***** END %s *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName()));
+        logger.info("***** END {} *****", WriterPipeServiceToConsoleAndFile.class.getSimpleName());
     }
 
     private String toJson(Actor actor) {

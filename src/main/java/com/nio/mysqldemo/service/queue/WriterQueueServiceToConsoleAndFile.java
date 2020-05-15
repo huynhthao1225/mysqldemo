@@ -3,6 +3,8 @@ package com.nio.mysqldemo.service.queue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nio.mysqldemo.dao.ActorDao;
 import com.nio.mysqldemo.model.Actor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Lazy
 public class WriterQueueServiceToConsoleAndFile implements InitializingBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(WriterQueueServiceToConsoleAndFile.class);
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -47,7 +51,7 @@ public class WriterQueueServiceToConsoleAndFile implements InitializingBean {
 
     public void letDoIt() throws InterruptedException {
 
-        System.out.println(String.format("***** START %s *****", WriterQueueServiceToConsoleAndFile.class.getSimpleName()));
+        logger.info("***** START {} *****", WriterQueueServiceToConsoleAndFile.class.getSimpleName());
         ActorDao actorDao = applicationContext.getBean(ActorDao.class);
         SqlRowSet sqlRowSet = actorDao.getAll();
         Actor actor = new Actor();
@@ -68,10 +72,10 @@ public class WriterQueueServiceToConsoleAndFile implements InitializingBean {
         consoleQueue.add(END);
         fileQueue.add(END);
 
-        System.out.println("I am about to signal end blockQueue job");
+        logger.info("I am about to signal end blockQueue job");
 
         executorService.awaitTermination(10, TimeUnit.SECONDS);
-        System.out.println(String.format("***** END %s *****", WriterQueueServiceToConsoleAndFile.class.getSimpleName()));
+        logger.info("***** END {} *****", WriterQueueServiceToConsoleAndFile.class.getSimpleName());
     }
 
 
